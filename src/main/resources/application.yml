@@ -1,0 +1,19 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: riskcontroll
+  datasource:
+    name: wangsc
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://localhost:3306/grabyou?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=GMT%2B8
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: localhost
+    port: 6379
+    password:
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: wangsc.riskcontroll.entity
