@@ -3,6 +3,8 @@ package wangsc.riskcontrol.service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +23,8 @@ public class UserService {
     @Autowired
     private RedisDao redisDao;
 
+    private static final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(8, 16, 1,
+            TimeUnit.SECONDS, new ArrayBlockingQueue<>(1000));
 
     /**
      * 判断数据库中是否存在用户名和手机号 1. 存在用户名，出错 2. 存在手机号 2.1 是否是黑名单用户 status=-1 2.2 是否当前可用 status=0 2.3 是否之前注销过
@@ -54,7 +58,9 @@ public class UserService {
                         resBody.setWrongMessage("数据库出错，请稍后再试");
                     }
                     user.setInfo(username, phone, password, status);
-                    saveUserBySessionIDInRedis(session, user);
+                    threadPoolExecutor.execute(()->{
+                        saveUserBySessionIDInRedis(session, user);
+                    });
                     break;
                 default:
                     // 暂时没有其他状态
@@ -91,7 +97,9 @@ public class UserService {
         User user = userMapper.getUserByUsernameAndPassword(username, password);
         ResBody resBody = new ResBody();
         if (user != null) {
-            this.saveUserBySessionIDInRedis(session, user);
+            threadPoolExecutor.execute(()->{
+                saveUserBySessionIDInRedis(session, user);
+            });
         } else {
             resBody.setWrongMessage("登录失败，检查用户名或密码是否正确");
         }
@@ -105,7 +113,9 @@ public class UserService {
         User user = getUserByPhone(phone);
         ResBody resBody = new ResBody();
         if (user != null) {
-            this.saveUserBySessionIDInRedis(session, user);
+            threadPoolExecutor.execute(()->{
+                saveUserBySessionIDInRedis(session, user);
+            });
         } else {
             resBody.setWrongMessage("登录失败，检查手机号是否正确");
         }
@@ -172,7 +182,9 @@ public class UserService {
     public void saveUserBySessionIDInRedis(HttpSession session, User user) {
         String key = session.getId() + "_session_user";
         String userJson = JSON.toJSONString(user);
-        redisDao.setKeyValue(key, userJson, 10, TimeUnit.MINUTES);
+        threadPoolExecutor.execute(()->{
+            redisDao.setKeyValue(key, userJson, 10, TimeUnit.MINUTES);
+        });
     }
 
     /**
@@ -180,7 +192,9 @@ public class UserService {
      */
     public void setUserExpireInRedis(HttpSession session) {
         String key = session.getId() + "_session_user";
-        redisDao.setExpireTime(key, 10, TimeUnit.MINUTES);
+        threadPoolExecutor.execute(()->{
+            redisDao.setExpireTime(key, 10, TimeUnit.MINUTES);
+        });
     }
 
 
@@ -189,6 +203,8 @@ public class UserService {
      */
     public void deleteUserInRedis(HttpSession session) {
         String key = session.getId() + "_session_user";
-        redisDao.deleteKeyValue(key);
+        threadPoolExecutor.execute(()->{
+            redisDao.deleteKeyValue(key);
+        });
     }
 }
