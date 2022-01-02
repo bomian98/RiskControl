@@ -20,18 +20,11 @@ public class FreqMetricService {
     private RedisDao redisDao;
     private final DefaultRedisScript script = new DefaultRedisScript(FreqMetricConfig.FREQ_OPERATION, Long.class);
 
-    public void getAllFreqMetric(FreqEvent event){
-        long periods[] = {};
-        String[] dimentions = getAllDimensions(event);
-        for(long period : periods){
-            long res = getOneFreqMetric("", event.getOperateTime(), period);
-        }
-
-
-    }
 
     public long getOneFreqMetric(String key, long timestamp, long period){
+        System.out.println(1);
         Long res = (Long) redisDao.executeLuaScript(script, key, timestamp, timestamp - period, timestamp);
+        System.out.println(res);
         return (long) res;
     }
 
@@ -51,8 +44,6 @@ public class FreqMetricService {
         if(!operateTypeEmpty){
 
         }
-
-
         return null;
     }
 }
