@@ -1,6 +1,5 @@
 package wangsc.riskcontrol.annotation;
 
-import io.lettuce.core.dynamic.batch.BatchSize;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,7 +11,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface FreqAnnotation {
     String value() default ""; // 页面的操作属性：注册 or 登录 or 其他
-    int limit() default 0;  // 后续可以用于限定访问频次，或者更换为数组形式，用来表示限制层级
+    String[] rulenames() default {"init_rule"};  // 规则名称
 
     /**
      * 同一个IP地址/手机号，短期内多次注册(可能是破解手机号或者注册n个账户)

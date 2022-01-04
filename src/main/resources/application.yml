@@ -14,6 +14,18 @@ spring:
     host: localhost
     port: 6379
     password:
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/java/main
+      exclude: static/**,public/**,WEB-INF/**
 mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: wangsc.riskcontroll.entity
+
+## 热部署生效
+#spring.devtools.restart.enabled=true
+## 设置需要重启的目录
+#spring.devtools.restart.additional-paths=src/java/main
+## 设置不需要重启的目录
+#spring.devtools.restart.exclude=static/**,public/**,WEB-INF/**

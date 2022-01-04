@@ -11,10 +11,6 @@ public class FreqControlResult extends ControlResult {
         message = "success";
     }
 
-    public void setWarningMessage(String mess){
-        level = 1;
-        message = mess;
-    }
 
     @Override
     public void setRiskLevel(int level){

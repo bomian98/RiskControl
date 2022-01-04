@@ -3,8 +3,7 @@ package wangsc.riskcontrol.mapper;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public class RedisDao {
 
     @Autowired
-    private RedisTemplate redisTemplate;
+    private StringRedisTemplate redisTemplate ;
 
     public void setKeyValue(String key, String value, int period, TimeUnit unit) {
         redisTemplate.opsForValue().set(key, value, period, unit);
@@ -30,7 +29,7 @@ public class RedisDao {
         redisTemplate.expire(key, period, unit);
     }
 
-    public Object executeLuaScript(RedisScript script, String key, long... arg){
-        return redisTemplate.execute(script, Arrays.asList(key), arg);
+    public Long executeLuaScript(RedisScript script, String key, String... arg){
+        return (Long) redisTemplate.execute(script, Arrays.asList(key), arg);
     }
 }

@@ -12,6 +12,15 @@ public abstract class ControlResult {
         message = "属性值出错，请检查当前规则配置情况";
     }
 
+    public boolean isRisk(){
+        return level > 0;
+    }
+
+    public void setWarningMessage(String mess){
+        level = -1;
+        message = mess;
+    }
+
     public void setRiskLevel(int level){
         this.level = Math.max(this.level, level);
     }

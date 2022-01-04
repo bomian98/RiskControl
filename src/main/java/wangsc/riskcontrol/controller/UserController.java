@@ -22,8 +22,9 @@ public class UserController {
 
     /*  用户注册   */
     @FreqAnnotation()
+    @ResponseBody
     @GetMapping("/register")
-    public String registerPage() {
+    public Object registerPage() {
         return "register";
     }
 
